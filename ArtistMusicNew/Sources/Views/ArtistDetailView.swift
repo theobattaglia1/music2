@@ -28,24 +28,27 @@ struct ArtistDetailView: View {
         var title: String { rawValue.capitalized }
     }
 
-    // MARK: body -----------------------------------------------------------
+    // --------------------------------------------------------------------
     var body: some View {
         if let artist { content(for: artist) } else { missing }
     }
 
-    // MARK: main content ---------------------------------------------------
+    // --------------------------------------------------------------------
+    @ViewBuilder
     private func content(for artist: Artist) -> some View {
 
         VStack(spacing: 0) {
 
             Header(artist: artist) { showEditArtist = true }
 
+            // ─── tab selector
             Picker("Tab", selection: $tab) {
                 ForEach(Tab.allCases) { Text($0.title).tag($0) }
             }
             .pickerStyle(.segmented)
             .padding(.horizontal)
 
+            // ─── tab pages
             switch tab {
 
             case .allSongs:
@@ -57,7 +60,6 @@ struct ArtistDetailView: View {
                     VStack(spacing: 0) {
                         if tab == .playlists {
                             PlaylistsList(artistID: artistID)
-                                .id(artist.playlists)   
                         } else {
                             CollaboratorsList(artist: artist,
                                               onTap: { collaboratorSheet = $0 })
@@ -71,31 +73,23 @@ struct ArtistDetailView: View {
         .navigationBarTitleDisplayMode(.inline)
         .safeAreaInset(edge: .bottom) { floatingPlus }
 
-        // sheets ───────────────────────────────────────────────────────────
-        .sheet(isPresented: $showAddSong) {
-            AddSongSheet(artistID: artistID)
-                .environmentObject(store)
-        }
-        .sheet(isPresented: $showAddPlaylist) {
-            AddPlaylistSheet(artistID: artistID)
-                .environmentObject(store)
-        }
+        // ─── sheets
+        .sheet(isPresented: $showAddSong)      { AddSongSheet(artistID: artistID).environmentObject(store) }
+        .sheet(isPresented: $showAddPlaylist)  { AddPlaylistSheet(artistID: artistID).environmentObject(store) }
         .sheet(item: $songArtPicker) { id in
             ImagePicker(data: Binding(
                 get: { artist.songs.first { $0.id == id }?.artworkData },
                 set: { store.setArtwork($0, for: id, artistID: artistID) }))
         }
         .sheet(item: $collaboratorSheet) { name in
-            CollaboratorDetailView(name: name)
-                .environmentObject(store)
+            CollaboratorDetailView(name: name).environmentObject(store)
         }
         .sheet(isPresented: $showEditArtist) {
-            EditArtistSheet(artist: artist)
-                .environmentObject(store)
+            EditArtistSheet(artist: artist).environmentObject(store)
         }
     }
 
-    // floating “＋”
+    // --------------------------------------------------------------------
     private var floatingPlus: some View {
         HStack {
             Spacer()
@@ -114,7 +108,7 @@ struct ArtistDetailView: View {
         }
     }
 
-    // fallback
+    // --------------------------------------------------------------------
     private var missing: some View {
         VStack {
             Spacer()
@@ -130,7 +124,7 @@ struct ArtistDetailView: View {
 // ────────────────────────────────────────────────────────────
 private struct Header: View {
     let artist: Artist
-    let onEdit: () -> Void
+    let onEdit : () -> Void
 
     var body: some View {
         ZStack(alignment: .bottomLeading) {
@@ -140,8 +134,6 @@ private struct Header: View {
                   .clipped()
 
             HStack(spacing: 12) {
-
-                // ↓↓↓ add the sizing & circle clip back ↓↓↓
                 avatar.resizable()
                       .scaledToFill()
                       .frame(width: 72, height: 72)
@@ -149,8 +141,7 @@ private struct Header: View {
                       .shadow(radius: 4)
 
                 Text(artist.name)
-                    .font(.title)
-                    .bold()
+                    .font(.title).bold()
                     .foregroundColor(.white)
                     .shadow(radius: 3)
 
@@ -163,15 +154,11 @@ private struct Header: View {
     }
 
     private var banner: Image {
-        artist.bannerData
-            .flatMap(UIImage.init(data:))
-            .map(Image.init(uiImage:))
+        artist.bannerData.flatMap(UIImage.init(data:)).map(Image.init(uiImage:))
         ?? Image(systemName: "photo")
     }
     private var avatar: Image {
-        artist.avatarData
-            .flatMap(UIImage.init(data:))
-            .map(Image.init(uiImage:))
+        artist.avatarData.flatMap(UIImage.init(data:)).map(Image.init(uiImage:))
         ?? Image(systemName: "person.circle")
     }
 }
@@ -262,9 +249,60 @@ private struct SongsList: View {
     }
 }
 
-// 
 // ────────────────────────────────────────────────────────────
-// MARK: CollaboratorsList  (unchanged)
+// MARK: PlaylistsList  (List in its own file is *optional*)
+// ────────────────────────────────────────────────────────────
+private struct PlaylistsList: View {
+
+    @EnvironmentObject private var store: ArtistStore
+    @State           private var editMode: EditMode = .active
+
+    let artistID: UUID
+    private let type = UTType.plainText
+
+    private var artist: Artist? { store.artists.first { $0.id == artistID } }
+
+    var body: some View {
+        if let artist {
+            List {
+                ForEach(artist.playlists) { list in
+                    HStack {
+                        Text(list.name)
+                        Spacer()
+                        Text("\(list.songIDs.count) tracks")
+                            .foregroundColor(.secondary)
+                    }
+                    .padding(.vertical, 4)
+                    .onDrop(of: [type], isTargeted: nil, perform: drop(into: list))
+                }
+                .onMove { src, dst in
+                    store.movePlaylists(of: artistID, from: src, to: dst)
+                }
+            }
+            .listStyle(.plain)
+            .environment(\.editMode, $editMode)
+            .frame(maxHeight: .infinity)
+        }
+    }
+
+    // accept dragged song IDs
+    private func drop(into list: Playlist) -> ([NSItemProvider]) -> Bool {
+        { providers in
+            guard let first = providers.first else { return false }
+            _ = first.loadObject(ofClass: NSString.self) { item, _ in
+                guard let s = item as? String,
+                      let uuid = UUID(uuidString: s) else { return }
+                DispatchQueue.main.async {
+                    store.add(songID: uuid, to: list.id, for: artistID)
+                }
+            }
+            return true
+        }
+    }
+}
+
+// ────────────────────────────────────────────────────────────
+// MARK: CollaboratorsList
 // ────────────────────────────────────────────────────────────
 private struct CollaboratorsList: View {
     let artist: Artist
@@ -294,3 +332,20 @@ private struct CollaboratorsList: View {
     }
 }
 
+// ────────────────────────────────────────────────────────────
+// MARK: Empty-state helper
+// ────────────────────────────────────────────────────────────
+private struct EmptyState: View {
+    let icon: String, title: String, message: String
+    var body: some View {
+        VStack(spacing: 8) {
+            Image(systemName: icon).font(.system(size: 40))
+                .foregroundColor(.secondary)
+            Text(title).font(.headline)
+            Text(message).font(.subheadline)
+                .foregroundColor(.secondary)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .padding(.vertical, 80)
+    }
+}

@@ -25,7 +25,6 @@
 		4012D2B92DC992B600FF5212 /* EditSongSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4012D2B82DC992B600FF5212 /* EditSongSheet.swift */; };
 		4012D2BB2DC993E200FF5212 /* BatchEditSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4012D2BA2DC993E200FF5212 /* BatchEditSheet.swift */; };
 		4012D2BD2DC9A3A200FF5212 /* EditArtistSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4012D2BC2DC9A3A200FF5212 /* EditArtistSheet.swift */; };
-		4012D2BF2DC9B55600FF5212 /* PlaylistsList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4012D2BE2DC9B55600FF5212 /* PlaylistsList.swift */; };
 		4012D2C12DC9B9F000FF5212 /* UIHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4012D2C02DC9B9F000FF5212 /* UIHelpers.swift */; };
 		65DA52A0D6382127CF267075 /* Logging.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8AA0475AF22DCA7D73F221E /* Logging.swift */; };
 /* End PBXBuildFile section */
@@ -48,7 +47,6 @@
 		4012D2B82DC992B600FF5212 /* EditSongSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditSongSheet.swift; sourceTree = "<group>"; };
 		4012D2BA2DC993E200FF5212 /* BatchEditSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BatchEditSheet.swift; sourceTree = "<group>"; };
 		4012D2BC2DC9A3A200FF5212 /* EditArtistSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditArtistSheet.swift; sourceTree = "<group>"; };
-		4012D2BE2DC9B55600FF5212 /* PlaylistsList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaylistsList.swift; sourceTree = "<group>"; };
 		4012D2C02DC9B9F000FF5212 /* UIHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIHelpers.swift; sourceTree = "<group>"; };
 		8223328F222F95F6CE86C7F6 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		992C48079BE633B0550765AA /* ArtistMusicApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArtistMusicApp.swift; sourceTree = "<group>"; };
@@ -106,7 +104,6 @@
 		A4698C6CA7A64A6F2F38EED8 /* Views */ = {
 			isa = PBXGroup;
 			children = (
-				4012D2BE2DC9B55600FF5212 /* PlaylistsList.swift */,
 				4012D2BC2DC9A3A200FF5212 /* EditArtistSheet.swift */,
 				4012D2BA2DC993E200FF5212 /* BatchEditSheet.swift */,
 				4012D2B82DC992B600FF5212 /* EditSongSheet.swift */,
@@ -188,7 +185,6 @@
 				4012D2B92DC992B600FF5212 /* EditSongSheet.swift in Sources */,
 				4012D2AC2DC8A1E500FF5212 /* UUID+Identifiable.swift in Sources */,
 				4012D2C12DC9B9F000FF5212 /* UIHelpers.swift in Sources */,
-				4012D2BF2DC9B55600FF5212 /* PlaylistsList.swift in Sources */,
 				4012D2B52DC8AE8600FF5212 /* Song+Helpers.swift in Sources */,
 				4012D2A52DC8990100FF5212 /* AddSongSheet.swift in Sources */,
 				4012D2A12DC8796500FF5212 /* ArtistStore.swift in Sources */,

@@ -15,30 +15,6 @@
 
 import SwiftUI
 
-// ────────────────────────────────────────────────────────────
-// MARK: Empty-state placeholder
-// ────────────────────────────────────────────────────────────
-struct EmptyState: View {
-    let icon: String
-    let title: String
-    let message: String
-
-    var body: some View {
-        VStack(spacing: 8) {
-            Image(systemName: icon)
-                .font(.system(size: 40))
-                .foregroundColor(.secondary)
-
-            Text(title).font(.headline)
-
-            Text(message)
-                .font(.subheadline)
-                .foregroundColor(.secondary)
-        }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .padding(.vertical, 80)
-    }
-}
 
 // ────────────────────────────────────────────────────────────
 // MARK: Reusable “rename” sheet modifier (optional)
